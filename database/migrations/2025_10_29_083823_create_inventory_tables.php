@@ -5,33 +5,13 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
-    public function up(): void {
-        // Tabel produk / asset
-        Schema::create('products', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('company_id')->constrained()->cascadeOnDelete();
-            $table->string('name');
-            $table->string('sku')->nullable()->unique();
-            $table->foreignId('category_id')->nullable()->constrained('product_categories')->nullOnDelete();
-            $table->decimal('price', 15, 2)->default(0);
-            $table->timestamps();
-            $table->softDeletes();
-        });
-
+    public function up(): void
+    {
         // Kategori produk
         Schema::create('product_categories', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->text('description')->nullable();
-            $table->timestamps();
-        });
-
-        // Stok per produk
-        Schema::create('product_stocks', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('product_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('warehouse_id')->nullable()->constrained()->nullOnDelete();
-            $table->integer('quantity')->default(0);
             $table->timestamps();
         });
 
@@ -44,7 +24,28 @@ return new class extends Migration {
             $table->timestamps();
         });
 
-        // Asset internal (hardware/software license)
+        // Tabel produk
+        Schema::create('products', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('company_id')->constrained()->cascadeOnDelete();
+            $table->string('name');
+            $table->string('sku')->nullable()->unique();
+            $table->foreignId('category_id')->nullable()->constrained('product_categories')->nullOnDelete();
+            $table->decimal('price', 15, 2)->default(0);
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        // Stok per produk
+        Schema::create('product_stocks', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('product_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('warehouse_id')->nullable()->constrained()->nullOnDelete();
+            $table->integer('quantity')->default(0);
+            $table->timestamps();
+        });
+
+        // Asset internal
         Schema::create('assets', function (Blueprint $table) {
             $table->id();
             $table->foreignId('company_id')->constrained()->cascadeOnDelete();
@@ -58,7 +59,9 @@ return new class extends Migration {
         });
     }
 
-    public function down(): void {
+
+    public function down(): void
+    {
         Schema::dropIfExists('assets');
         Schema::dropIfExists('warehouses');
         Schema::dropIfExists('product_stocks');
