@@ -12,45 +12,40 @@ class Invoice extends Model
     protected $fillable = [
         'company_id',
         'client_id',
-        'project_id',
         'invoice_number',
-        'amount',
+        'invoice_date',
         'due_date',
+        'total',
         'status',
     ];
 
-    protected $casts = [
-        'due_date' => 'date',
-        'amount' => 'decimal:2',
-    ];
-
-    public const STATUS_DRAFT = 'draft';
-    public const STATUS_SENT = 'sent';
-    public const STATUS_PAID = 'paid';
-    public const STATUS_OVERDUE = 'overdue';
-
+    /** Relasi ke Company */
     public function company()
     {
         return $this->belongsTo(Company::class);
     }
 
+    /** Relasi ke Client */
     public function client()
     {
         return $this->belongsTo(Client::class);
     }
 
-    public function project()
+    /** Relasi ke Item */
+    public function items()
     {
-        return $this->belongsTo(Project::class);
+        return $this->hasMany(InvoiceItem::class);
     }
 
+    /** Relasi ke Pembayaran */
     public function payments()
     {
         return $this->hasMany(Payment::class);
     }
 
-    public function getIsOverdueAttribute()
+    /** Hitung total dari item secara otomatis */
+    public function calculateTotal()
     {
-        return $this->status !== self::STATUS_PAID && now()->gt($this->due_date);
+        return $this->items->sum('total');
     }
 }

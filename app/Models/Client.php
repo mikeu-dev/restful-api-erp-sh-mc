@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Client extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'company_id',
@@ -15,32 +16,23 @@ class Client extends Model
         'email',
         'phone',
         'address',
-        'website',
-        'industry',
-        'status',
     ];
 
-    public const STATUS_ACTIVE = 'active';
-    public const STATUS_INACTIVE = 'inactive';
-    public const STATUS_PROSPECT = 'prospect';
-
+    /** Relasi ke Company */
     public function company()
     {
         return $this->belongsTo(Company::class);
     }
 
+    /** Relasi ke kontak tambahan */
     public function contacts()
     {
         return $this->hasMany(ClientContact::class);
     }
 
-    public function projects()
+    /** Relasi ke catatan */
+    public function notes()
     {
-        return $this->hasMany(Project::class);
-    }
-
-    public function deals()
-    {
-        return $this->hasMany(Deal::class);
+        return $this->hasMany(ClientNote::class);
     }
 }

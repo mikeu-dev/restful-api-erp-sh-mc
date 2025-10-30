@@ -8,38 +8,17 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class EmployeeSalary extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     protected $fillable = [
-        'company_id',
-        'name',
-        'email',
-        'phone',
-        'position',
-        'hired_at',
+        'employee_id',
+        'salary',
+        'effective_from',
     ];
 
-    protected $casts = [
-        'hired_at' => 'date',
-    ];
-
-    public function company()
+    /** Relasi ke karyawan */
+    public function employee()
     {
-        return $this->belongsTo(Company::class);
-    }
-
-    public function salaries()
-    {
-        return $this->hasMany(EmployeeSalary::class);
-    }
-
-    public function leaves()
-    {
-        return $this->hasMany(EmployeeLeave::class);
-    }
-
-    public function attendance()
-    {
-        return $this->hasMany(EmployeeAttendance::class);
+        return $this->belongsTo(Employee::class);
     }
 }

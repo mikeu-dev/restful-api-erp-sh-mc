@@ -18,34 +18,31 @@ class Task extends Model
         'priority',
     ];
 
-    public const STATUS_TODO = 'todo';
-    public const STATUS_IN_PROGRESS = 'in_progress';
-    public const STATUS_DONE = 'done';
-
-    public const PRIORITY_LOW = 'low';
-    public const PRIORITY_MEDIUM = 'medium';
-    public const PRIORITY_HIGH = 'high';
-
+    /** Relasi ke proyek */
     public function project()
     {
         return $this->belongsTo(Project::class);
     }
 
+    /** Relasi ke karyawan yang ditugaskan */
     public function assignee()
     {
         return $this->belongsTo(Employee::class, 'assigned_to');
     }
 
+    /** Relasi ke komentar task */
     public function comments()
     {
         return $this->hasMany(TaskComment::class);
     }
 
+    /** Scope untuk task berdasarkan status */
     public function scopeStatus($query, string $status)
     {
         return $query->where('status', $status);
     }
 
+    /** Scope untuk prioritas */
     public function scopePriority($query, string $priority)
     {
         return $query->where('priority', $priority);

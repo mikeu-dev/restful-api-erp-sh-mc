@@ -12,68 +12,46 @@ class Ticket extends Model
     protected $fillable = [
         'company_id',
         'client_id',
-        'project_id',
-        'category_id',
-        'subject',
+        'created_by',
+        'title',
         'description',
-        'priority',
         'status',
-        'assigned_to',
-        'opened_by',
-        'closed_at',
+        'priority',
     ];
 
-    protected $casts = [
-        'closed_at' => 'datetime',
-    ];
-
-    public const PRIORITY_LOW = 'low';
-    public const PRIORITY_MEDIUM = 'medium';
-    public const PRIORITY_HIGH = 'high';
-    public const PRIORITY_CRITICAL = 'critical';
-
-    public const STATUS_OPEN = 'open';
-    public const STATUS_IN_PROGRESS = 'in_progress';
-    public const STATUS_RESOLVED = 'resolved';
-    public const STATUS_CLOSED = 'closed';
-
+    /** Relasi ke perusahaan */
     public function company()
     {
         return $this->belongsTo(Company::class);
     }
 
+    /** Relasi ke client (pelapor) */
     public function client()
     {
         return $this->belongsTo(Client::class);
     }
 
-    public function project()
+    /** Relasi ke user pembuat tiket */
+    public function creator()
     {
-        return $this->belongsTo(Project::class);
+        return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function category()
+    /** Relasi ke pesan dalam tiket */
+    public function messages()
     {
-        return $this->belongsTo(TicketCategory::class, 'category_id');
+        return $this->hasMany(TicketMessage::class);
     }
 
-    public function assignee()
+    /** (Opsional) relasi ke master status jika digunakan */
+    public function statusMaster()
     {
-        return $this->belongsTo(Employee::class, 'assigned_to');
+        return $this->belongsTo(TicketStatus::class, 'status', 'name');
     }
 
-    public function openedBy()
+    /** (Opsional) relasi ke master prioritas jika digunakan */
+    public function priorityMaster()
     {
-        return $this->belongsTo(User::class, 'opened_by');
-    }
-
-    public function comments()
-    {
-        return $this->hasMany(TicketComment::class);
-    }
-
-    public function attachments()
-    {
-        return $this->hasMany(TicketAttachment::class);
+        return $this->belongsTo(TicketPriority::class, 'priority', 'name');
     }
 }

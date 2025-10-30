@@ -5,21 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ClientContact extends Model
+class LeadStatus extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'client_id',
         'name',
-        'email',
-        'phone',
-        'position',
+        'description',
     ];
 
-    /** Relasi ke Client */
-    public function client()
+    /** Relasi ke Lead (jika diperlukan) */
+    public function leads()
     {
-        return $this->belongsTo(Client::class);
+        return $this->hasMany(Lead::class, 'status', 'name');
     }
 }

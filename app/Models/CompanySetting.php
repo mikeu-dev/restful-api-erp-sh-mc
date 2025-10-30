@@ -9,8 +9,13 @@ class CompanySetting extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['company_id', 'key', 'value'];
+    protected $fillable = [
+        'company_id',
+        'key',
+        'value',
+    ];
 
+    /** Relasi ke company */
     public function company()
     {
         return $this->belongsTo(Company::class);

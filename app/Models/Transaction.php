@@ -11,38 +11,22 @@ class Transaction extends Model
 
     protected $fillable = [
         'company_id',
-        'project_id',
+        'account_id',
         'type',
         'amount',
         'description',
         'transaction_date',
     ];
 
-    protected $casts = [
-        'transaction_date' => 'date',
-        'amount' => 'decimal:2',
-    ];
-
-    public const TYPE_INCOME = 'income';
-    public const TYPE_EXPENSE = 'expense';
-
+    /** Relasi ke Company */
     public function company()
     {
         return $this->belongsTo(Company::class);
     }
 
-    public function project()
+    /** Relasi ke Account */
+    public function account()
     {
-        return $this->belongsTo(Project::class);
-    }
-
-    public function scopeIncome($query)
-    {
-        return $query->where('type', self::TYPE_INCOME);
-    }
-
-    public function scopeExpense($query)
-    {
-        return $query->where('type', self::TYPE_EXPENSE);
+        return $this->belongsTo(Account::class);
     }
 }

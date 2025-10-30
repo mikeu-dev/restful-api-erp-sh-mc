@@ -5,27 +5,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Payment extends Model
+class InvoiceItem extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'invoice_id',
-        'account_id',
-        'amount',
-        'payment_date',
-        'payment_method',
+        'description',
+        'quantity',
+        'price',
+        'total',
     ];
 
     /** Relasi ke Invoice */
     public function invoice()
     {
         return $this->belongsTo(Invoice::class);
-    }
-
-    /** Relasi ke Account */
-    public function account()
-    {
-        return $this->belongsTo(Account::class);
     }
 }

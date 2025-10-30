@@ -5,21 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ClientContact extends Model
+class ProductCategory extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'client_id',
         'name',
-        'email',
-        'phone',
-        'position',
+        'description',
     ];
 
-    /** Relasi ke Client */
-    public function client()
+    /** Relasi ke produk */
+    public function products()
     {
-        return $this->belongsTo(Client::class);
+        return $this->hasMany(Product::class, 'category_id');
     }
 }

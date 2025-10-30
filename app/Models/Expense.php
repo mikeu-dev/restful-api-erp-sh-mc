@@ -7,24 +7,26 @@ use Illuminate\Database\Eloquent\Model;
 
 class Expense extends Model
 {
-    use HasFactory;
+     use HasFactory;
 
     protected $fillable = [
         'company_id',
-        'category',
+        'title',
         'amount',
-        'description',
+        'account_id',
         'expense_date',
-        'reference',
+        'description',
     ];
 
-    protected $casts = [
-        'expense_date' => 'date',
-        'amount' => 'decimal:2',
-    ];
-
+    /** Relasi ke Company */
     public function company()
     {
         return $this->belongsTo(Company::class);
+    }
+
+    /** Relasi ke Account */
+    public function account()
+    {
+        return $this->belongsTo(Account::class);
     }
 }

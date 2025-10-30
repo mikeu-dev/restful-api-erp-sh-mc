@@ -4,48 +4,30 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Lead extends Model
 {
-    use HasFactory;
+   use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'company_id',
-        'client_id',
+        'name',
+        'email',
+        'phone',
         'source',
         'status',
-        'value',
-        'assigned_to',
-        'notes',
     ];
 
-    protected $casts = [
-        'value' => 'decimal:2',
-    ];
-
-    public const STATUS_NEW = 'new';
-    public const STATUS_CONTACTED = 'contacted';
-    public const STATUS_QUALIFIED = 'qualified';
-    public const STATUS_CONVERTED = 'converted';
-    public const STATUS_LOST = 'lost';
-
+    /** Relasi ke Company */
     public function company()
     {
         return $this->belongsTo(Company::class);
     }
 
-    public function client()
+    /** Jika lead status pakai tabel master */
+    public function leadStatus()
     {
-        return $this->belongsTo(Client::class);
-    }
-
-    public function assignedEmployee()
-    {
-        return $this->belongsTo(Employee::class, 'assigned_to');
-    }
-
-    public function activities()
-    {
-        return $this->morphMany(ActivityLog::class, 'subject');
+        return $this->belongsTo(LeadStatus::class, 'status', 'name');
     }
 }

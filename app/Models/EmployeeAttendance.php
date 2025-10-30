@@ -15,20 +15,20 @@ class EmployeeAttendance extends Model
         'clock_out',
     ];
 
-    protected $casts = [
-        'clock_in'  => 'datetime',
-        'clock_out' => 'datetime',
-    ];
-
+    /** Relasi ke karyawan */
     public function employee()
     {
         return $this->belongsTo(Employee::class);
     }
 
-    // Helper untuk menghitung durasi kerja
-    public function getWorkDurationAttribute()
+    /** Hitung total jam kerja */
+    public function getTotalHoursAttribute()
     {
         if (!$this->clock_out) return null;
-        return $this->clock_out->diffInHours($this->clock_in);
+
+        $in = \Carbon\Carbon::parse($this->clock_in);
+        $out = \Carbon\Carbon::parse($this->clock_out);
+
+        return round($in->diffInMinutes($out) / 60, 2);
     }
 }

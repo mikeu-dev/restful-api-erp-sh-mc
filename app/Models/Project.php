@@ -17,24 +17,31 @@ class Project extends Model
         'end_date',
     ];
 
-    protected $casts = [
-        'start_date' => 'date',
-        'end_date'   => 'date',
-    ];
-
+    /** Relasi ke perusahaan */
     public function company()
     {
         return $this->belongsTo(Company::class);
     }
 
+    /** Relasi ke task-task dalam proyek */
     public function tasks()
     {
         return $this->hasMany(Task::class);
     }
 
-    public function teamMembers()
+    /** Hitung jumlah task selesai */
+    public function getCompletedTasksCountAttribute()
     {
-        return $this->belongsToMany(Employee::class, 'project_teams')
-                    ->withTimestamps();
+        return $this->tasks()->where('status', 'done')->count();
+    }
+
+    /** Hitung progres proyek (persentase task selesai) */
+    public function getProgressAttribute()
+    {
+        $total = $this->tasks()->count();
+        if ($total === 0) return 0;
+
+        $done = $this->tasks()->where('status', 'done')->count();
+        return round(($done / $total) * 100, 2);
     }
 }
