@@ -1,0 +1,30 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Expense extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'company_id',
+        'category',
+        'amount',
+        'description',
+        'expense_date',
+        'reference',
+    ];
+
+    protected $casts = [
+        'expense_date' => 'date',
+        'amount' => 'decimal:2',
+    ];
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
+}
