@@ -6,6 +6,7 @@ class RegisterRequestDto
 {
     public $name;
     public $email;
+    public $username;
     public $password;
     public $password_confirmation;
     /**
@@ -15,6 +16,7 @@ class RegisterRequestDto
     {
         $this->name = $data['name'];
         $this->email = $data['email'];
+        $this->username = $data['username'];
         $this->password = $data['password'];
         $this->password_confirmation = $data['password_confirmation'];
     }
@@ -27,6 +29,7 @@ class RegisterRequestDto
         return [
             'name' => $this->name,
             'email' => $this->email,
+            'username' => $this->username,
             'password' => $this->password,
             'password_confirmation' => $this->password_confirmation,
         ];

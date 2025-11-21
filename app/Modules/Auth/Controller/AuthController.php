@@ -25,7 +25,7 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        $dto = new RegisterRequestDto($request->only('name', 'email', 'password', 'password_confirmation'));
+        $dto = new RegisterRequestDto($request->only('name', 'email', 'username', 'password', 'password_confirmation'));
         return $this->authService->register($dto);
     }
 
@@ -36,7 +36,7 @@ class AuthController extends Controller
 
     public function refresh(Request $request)
     {
-        return $this->authService->refresh($request->only('refresh_token'));
+        return $this->authService->refresh($request);
     }
 
     public function me()

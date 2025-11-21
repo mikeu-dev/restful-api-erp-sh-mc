@@ -65,8 +65,24 @@ class AuthService implements IAuthService
             return $this->apiResponse->serverError('Register failed');
         }
 
-        return $this->apiResponse->success($user, 'Register success');
+        try {
+            $accessToken = JWTAuth::fromUser($user);
+
+            $refreshToken = JWTAuth::claims(['type' => 'refresh'])->fromUser($user);
+
+            $data = new AuthResponseDto(
+                $accessToken,
+                $user,
+                'Bearer',
+                $refreshToken
+            );
+
+            return $this->apiResponse->success($data, 'Register success');
+        } catch (JWTException $e) {
+            return $this->apiResponse->serverError($e->getMessage());
+        }
     }
+
 
     public function logout()
     {
@@ -81,22 +97,24 @@ class AuthService implements IAuthService
     public function refresh($request)
     {
         try {
-            // Ambil refresh token dari request
-            $refreshToken = $request->bearerToken();
-            if (!$refreshToken) {
+            $oldRefreshToken = $request->bearerToken();
+            if (!$oldRefreshToken) {
                 return $this->apiResponse->validationFailed('Refresh token required');
             }
 
-            $user = JWTAuth::setToken($refreshToken)->toUser(); // Validasi refresh token
-            $newAccessToken = JWTAuth::fromUser($user);        // Generate access token baru
+            $user = JWTAuth::setToken($oldRefreshToken)->toUser();
 
-            $data = new AuthResponseDto($newAccessToken, $user, $refreshToken);
+            $newAccessToken = JWTAuth::fromUser($user);
+            $newRefreshToken = JWTAuth::claims(['type' => 'refresh'])->fromUser($user);
+
+            $data = new AuthResponseDto($newAccessToken, $user, 'Bearer', $newRefreshToken);
 
             return $this->apiResponse->success($data, 'Token refreshed successfully');
         } catch (JWTException $e) {
             return $this->apiResponse->serverError($e->getMessage());
         }
     }
+
 
     public function me()
     {
