@@ -8,11 +8,28 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, SoftDeletes, HasRoles;
+
+    /**
+     * Ambil identifier unik user yang akan disimpan di dalam JWT.
+     */
+    public function getJWTIdentifier()
+    {
+        return $this->getKey(); // biasanya ID user
+    }
+
+    /**
+     * Tambahkan klaim (claims) tambahan jika diperlukan.
+     */
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
 
     protected $guard_name = 'api';
     /**
