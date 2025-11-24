@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Auth\DTOs\LoginRequestDto;
 use App\Modules\Auth\DTOs\RegisterRequestDto;
 use App\Modules\Auth\Service\AuthService;
+use App\Services\ApiResponse;
 use Illuminate\Http\Request;
 
 /**
@@ -22,10 +23,12 @@ use Illuminate\Http\Request;
 class AuthController extends Controller
 {
     protected $authService;
+    protected $apiResponse;
 
-    public function __construct(AuthService $authService)
+    public function __construct(AuthService $authService, ApiResponse $apiResponse)
     {
         $this->authService = $authService;
+        $this->apiResponse = $apiResponse;
     }
     /**
      * @OA\Post(
@@ -74,8 +77,14 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $dto = new LoginRequestDto($request->only('email', 'password'));
-        return $this->authService->login($dto);
+        try {
+            $dto = new LoginRequestDto($request->only('email', 'password'));
+            $data = $this->authService->login($dto);
+
+            return $this->apiResponse->success($data, 'Login successful');
+        } catch (\Exception $e) {
+            return $this->apiResponse->validationFailed($e->getMessage());
+        }
     }
 
     /**
@@ -127,8 +136,21 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
-        $dto = new RegisterRequestDto($request->only('name', 'email', 'username', 'password', 'password_confirmation'));
-        return $this->authService->register($dto);
+        try {
+            $dto = new RegisterRequestDto($request->only(
+                'name',
+                'email',
+                'username',
+                'password',
+                'password_confirmation'
+            ));
+
+            $data = $this->authService->register($dto);
+
+            return $this->apiResponse->success($data, 'Register success');
+        } catch (\Exception $e) {
+            return $this->apiResponse->validationFailed($e->getMessage());
+        }
     }
 
     /**
@@ -159,7 +181,12 @@ class AuthController extends Controller
      */
     public function logout()
     {
-        return $this->authService->logout();
+        try {
+            $this->authService->logout();
+            return $this->apiResponse->success(null, 'Logout success');
+        } catch (\Exception $e) {
+            return $this->apiResponse->serverError($e->getMessage());
+        }
     }
 
     /**
@@ -191,7 +218,12 @@ class AuthController extends Controller
      */
     public function refresh(Request $request)
     {
-        return $this->authService->refresh($request);
+        try {
+            $data = $this->authService->refresh($request);
+            return $this->apiResponse->success($data, 'Token refreshed successfully');
+        } catch (\Exception $e) {
+            return $this->apiResponse->validationFailed($e->getMessage());
+        }
     }
 
     /**
@@ -232,6 +264,11 @@ class AuthController extends Controller
      */
     public function me()
     {
-        return $this->authService->me();
+        try {
+            $user = $this->authService->me();
+            return $this->apiResponse->success($user);
+        } catch (\Exception $e) {
+            return $this->apiResponse->validationFailed($e->getMessage());
+        }
     }
 }
