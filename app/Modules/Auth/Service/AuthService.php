@@ -46,7 +46,7 @@ class AuthService implements IAuthService
             );
 
 
-            return $this->apiResponse->success($data, 'Login success');
+            return $this->apiResponse->success($data, 'Login successful');
         } catch (JWTException $e) {
             return $this->apiResponse->serverError($e->getMessage());
         }
