@@ -1,7 +1,8 @@
 <?php
 
-namespace App;
+namespace App\Modules\Company\Model;
 
+use App\Modules\CompanySetting\Model\CompanySetting;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;

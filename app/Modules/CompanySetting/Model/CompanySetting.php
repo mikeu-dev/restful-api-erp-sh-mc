@@ -1,7 +1,8 @@
 <?php
 
-namespace App;
+namespace App\Modules\CompanySetting\Model;
 
+use App\Modules\Company\Model\Company;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 

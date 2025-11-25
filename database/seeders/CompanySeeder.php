@@ -2,8 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Company;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Modules\Company\Model\Company;
 use Illuminate\Database\Seeder;
 
 class CompanySeeder extends Seeder
