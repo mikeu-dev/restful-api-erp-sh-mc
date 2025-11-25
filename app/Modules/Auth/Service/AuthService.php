@@ -2,7 +2,7 @@
 
 namespace App\Modules\Auth\Service;
 
-use App\Contracts\Services\Auth\IAuthService;
+use App\Contracts\Auth\Service\IAuthService;
 use App\Modules\Auth\DTOs\AuthResponseDto;
 use App\Modules\Auth\DTOs\LoginRequestDto;
 use App\Modules\Auth\DTOs\RegisterRequestDto;

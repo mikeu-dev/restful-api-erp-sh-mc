@@ -3,7 +3,7 @@
 namespace App\Modules\User\Service;
 
 use App\Base\BaseService;
-use App\Contracts\Servies\User\IUserService;
+use App\Contracts\User\Service\IUserService;
 use App\Modules\User\Repository\UserRepository;
 
 class UserService extends BaseService implements IUserService

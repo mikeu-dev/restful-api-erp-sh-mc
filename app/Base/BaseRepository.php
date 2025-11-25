@@ -2,7 +2,7 @@
 
 namespace App\Base;
 
-use App\Contracts\Repositories\BaseRepositoryContract;
+use App\Contracts\Base\Repository\BaseRepositoryContract;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 

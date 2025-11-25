@@ -2,7 +2,7 @@
 
 namespace App\Base;
 
-use App\Contracts\Services\BaseServiceContract;
+use App\Contracts\Base\Service\BaseServiceContract;
 
 abstract class BaseService implements BaseServiceContract
 {

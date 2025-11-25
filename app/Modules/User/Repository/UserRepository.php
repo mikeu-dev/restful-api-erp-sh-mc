@@ -3,7 +3,7 @@
 namespace App\Modules\User\Repository;
 
 use App\Base\BaseRepository;
-use App\Contracts\Repositories\User\IUserRepository;
+use App\Contracts\User\Repository\IUserRepository;
 use App\Modules\User\Model\User;
 
 class UserRepository extends BaseRepository implements IUserRepository

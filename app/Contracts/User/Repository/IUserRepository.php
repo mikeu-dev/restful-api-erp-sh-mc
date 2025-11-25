@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Contracts\Repositories\User;
+namespace App\Contracts\User\Repository;
 
 interface IUserRepository
 {
