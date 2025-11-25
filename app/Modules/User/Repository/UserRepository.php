@@ -3,9 +3,10 @@
 namespace App\Modules\User\Repository;
 
 use App\Base\BaseRepository;
+use App\Contracts\Repositories\User\IUserRepository;
 use App\Modules\User\Model\User;
 
-class UserRepository extends BaseRepository
+class UserRepository extends BaseRepository implements IUserRepository
 {
     protected $model;
     public function __construct(User $model)
@@ -29,9 +30,14 @@ class UserRepository extends BaseRepository
         return parent::find($id, $columns);
     }
 
-    public function update(string $id, array $data)
+    public function update(int $id, array $data)
     {
         $record = $this->find($id);
         return $record->update($data);
+    }
+
+    public function changePassword(array $data)
+    {
+        return $this->model->update($data);
     }
 }

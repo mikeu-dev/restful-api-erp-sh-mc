@@ -3,7 +3,9 @@
 namespace App\Modules\User\Controller;
 
 use App\Base\BaseController;
+use App\Modules\User\DTOs\ChangePasswordRequestDto;
 use App\Modules\User\DTOs\UserRequestDto;
+use App\Modules\User\Requests\ChangePasswordRequest;
 use App\Modules\User\Requests\UserRequest;
 use App\Modules\User\Service\UserService;
 use App\Services\ApiResponse;
@@ -26,11 +28,13 @@ class UserController extends BaseController
 
     public function store(UserRequest $request)
     {
-        if (!$request->validated()) {
-            return $this->apiResponse->validationFailed($request->validatedWithError());
+        $data = $request->validated();
+
+        if (!isset($data['password']) || empty($data['password'])) {
+            $data['password'] = env('PASSWORD_DEFAULT');
         }
 
-        $dto = new UserRequestDto($request->validated());
+        $dto = new UserRequestDto($data);
 
         try {
             $result = $this->userService->createUser($dto->toArray());
@@ -50,9 +54,6 @@ class UserController extends BaseController
 
     public function update(UserRequest $request, int $id)
     {
-        if (!$request->validated()) {
-            return $this->apiResponse->validationFailed($request->validatedWithError());
-        }
         $dto = new UserRequestDto($request->validated());
 
         try {
@@ -69,5 +70,20 @@ class UserController extends BaseController
     public function destroy(int $id)
     {
         return parent::destroy($id);
+    }
+
+    public function changePassword(ChangePasswordRequest $request)
+    {
+        $dto = new ChangePasswordRequestDto($request->validated());
+
+        try {
+            $result =  $this->userService->changePassword($dto->toArray());
+            return $this->apiResponse->success($result);
+        } catch (\Exception $e) {
+            Log::error('Failed to change password : ' . $e->getMessage(), [
+                'stack' => $e->getTraceAsString()
+            ]);
+            return $this->apiResponse->serverError();
+        }
     }
 }

@@ -4,11 +4,10 @@ namespace App\Modules\User\DTOs;
 
 class UserRequestDto
 {
-    public $name;
-    public $email;
-    public $username;
-    public $password;
-    public $password_confirmation;
+    public string $name;
+    public string $email;
+    public string $username;
+    public string $password;
     /**
      * Create a new class instance.
      */
@@ -18,7 +17,6 @@ class UserRequestDto
         $this->email = $data['email'];
         $this->username = $data['username'];
         $this->password = $data['password'];
-        $this->password_confirmation = $data['password_confirmation'];
     }
 
     /**
@@ -31,7 +29,6 @@ class UserRequestDto
             'email' => $this->email,
             'username' => $this->username,
             'password' => $this->password,
-            'password_confirmation' => $this->password_confirmation,
         ];
     }
 }

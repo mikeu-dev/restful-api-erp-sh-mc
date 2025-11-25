@@ -3,9 +3,10 @@
 namespace App\Modules\User\Service;
 
 use App\Base\BaseService;
+use App\Contracts\Servies\User\IUserService;
 use App\Modules\User\Repository\UserRepository;
 
-class UserService extends BaseService
+class UserService extends BaseService implements IUserService
 {
     protected $userRepository;
     public function __construct(UserRepository $repository)
@@ -22,5 +23,10 @@ class UserService extends BaseService
     public function updateUser($id, $request)
     {
         return $this->userRepository->update($id, $request);
+    }
+
+    public function changePassword($request)
+    {
+        return $this->userRepository->changePassword($request);
     }
 }
