@@ -27,8 +27,7 @@ class UserRequest extends FormRequest
     {
         return [
             'name'     => 'required|string',
-            'password' => ['nullable', Password::defaults()],
-            'password_confirmation' => ['nullable', Password::defaults()],
+            'password' => ['nullable', Password::defaults(), 'confirmed'],
             'username' => 'required|string|unique:users,username,' . $this->id,
             'email'    => 'required|email|unique:users,email,' . $this->id,
         ];
