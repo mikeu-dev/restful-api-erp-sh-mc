@@ -5,6 +5,7 @@ namespace App\Base;
 use App\Contracts\Base\Repository\BaseRepositoryContract;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Closure;
 
 abstract class BaseRepository implements BaseRepositoryContract
 {
@@ -24,7 +25,7 @@ abstract class BaseRepository implements BaseRepositoryContract
     }
 
     /**
-     * Paginasi fleksibel dengan filter, sort, relation, dan closure
+     * Paginate dengan filter, sort, relation, dan callback
      */
     public function paginate(
         int $perPage = 15,
@@ -32,18 +33,29 @@ abstract class BaseRepository implements BaseRepositoryContract
         array $filters = [],
         array $sorts = [],
         array $relations = [],
-        ?\Closure $callback = null
+        ?Closure $callback = null
     ) {
         $query = $this->query();
 
-        // Eager Load
+        // Eager Load ramah relasi
         if (!empty($relations)) {
-            $query->with($relations);
+            foreach ($relations as $key => $relation) {
+                if ($relation instanceof Closure && is_string($key)) {
+                    // relasi dengan closure: ['posts' => fn($q) => $q->where(...)]
+                    $query->with([$key => $relation]);
+                } elseif (is_int($key) && is_string($relation)) {
+                    // relasi sederhana: ['roles']
+                    $query->with($relation);
+                }
+            }
         }
 
         // Filtering dinamis
         foreach ($filters as $field => $value) {
-            if (is_array($value)) {
+            if ($value instanceof Closure) {
+                // filter custom menggunakan closure
+                $value($query);
+            } elseif (is_array($value)) {
                 // format: ['field', 'operator', 'value']
                 $query->where(...$value);
             } else {
@@ -53,25 +65,56 @@ abstract class BaseRepository implements BaseRepositoryContract
 
         // Sorting dinamis
         foreach ($sorts as $column => $direction) {
-            $query->orderBy($column, $direction);
+            if ($column instanceof Closure) {
+                $column($query);
+            } else {
+                $query->orderBy($column, $direction);
+            }
         }
 
         // Callback untuk custom query
-        if ($callback instanceof \Closure) {
+        if ($callback instanceof Closure) {
             $callback($query);
         }
 
         return $query->paginate($perPage, $columns);
     }
 
-    public function all(array $columns = ['*'])
+    /**
+     * Ambil semua data dengan relasi optional
+     */
+    public function all(array $columns = ['*'], array $relations = [])
     {
-        return $this->model->all($columns);
+        $query = $this->query();
+
+        if (!empty($relations)) {
+            foreach ($relations as $key => $relation) {
+                if ($relation instanceof Closure && is_string($key)) {
+                    $query->with([$key => $relation]);
+                } elseif (is_int($key) && is_string($relation)) {
+                    $query->with($relation);
+                }
+            }
+        }
+
+        return $query->get($columns);
     }
 
-    public function find(int $id, array $columns = ['*'])
+    public function find(int $id, array $columns = ['*'], array $relations = [])
     {
-        return $this->model->find($id, $columns);
+        $query = $this->query();
+
+        if (!empty($relations)) {
+            foreach ($relations as $key => $relation) {
+                if ($relation instanceof Closure && is_string($key)) {
+                    $query->with([$key => $relation]);
+                } elseif (is_int($key) && is_string($relation)) {
+                    $query->with($relation);
+                }
+            }
+        }
+
+        return $query->find($id, $columns);
     }
 
     public function delete(int $id)
@@ -82,4 +125,3 @@ abstract class BaseRepository implements BaseRepositoryContract
 
     abstract public function model(): string;
 }
-
