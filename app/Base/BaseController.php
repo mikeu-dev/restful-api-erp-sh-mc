@@ -2,11 +2,9 @@
 
 namespace App\Base;
 
-use App\Http\Controllers\Controller;
 use App\Services\ApiResponse;
-use Illuminate\Http\Request;
 
-abstract class BaseController extends Controller
+abstract class BaseController
 {
     protected $service;
     protected ApiResponse $apiResponse;
@@ -30,21 +28,6 @@ abstract class BaseController extends Controller
             return $this->apiResponse->notFound('Not Found');
         }
         return $this->apiResponse->success($data);
-    }
-
-    public function store(Request $request)
-    {
-        $data = $this->service->create($request->all());
-        return $this->apiResponse->success($data, 'Created Successfully');
-    }
-
-    public function update(Request $request, int $id)
-    {
-        $data = $this->service->update($id, $request->all());
-        if (!$data) {
-            return $this->apiResponse->notFound('Not Found');
-        }
-        return $this->apiResponse->success($data, 'Updated Successfully');
     }
 
     public function destroy(int $id)
