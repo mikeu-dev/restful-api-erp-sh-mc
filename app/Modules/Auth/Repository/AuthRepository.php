@@ -2,8 +2,7 @@
 
 namespace App\Modules\Auth\Repository;
 
-use App\Base\BaseRepository;
-use App\Contracts\Repositories\Auth\IAuthRepository;
+use App\Contracts\Auth\Repository\IAuthRepository;
 use App\Modules\User\Model\User;
 
 class AuthRepository implements IAuthRepository

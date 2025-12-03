@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Contracts\Services\Auth;
+namespace App\Contracts\Auth\Service;
 
 use App\Modules\Auth\DTOs\LoginRequestDto;
 use App\Modules\Auth\DTOs\RegisterRequestDto;

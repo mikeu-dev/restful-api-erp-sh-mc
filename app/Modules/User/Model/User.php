@@ -3,6 +3,8 @@
 namespace App\Modules\User\Model;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Modules\Biodata\Model\Biodata;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -67,5 +69,10 @@ class User extends Authenticatable implements JWTSubject
             'mobile' => 'boolean',
             'password' => 'hashed',
         ];
+    }
+
+    public function biodata()
+    {
+        return $this->hasOne(Biodata::class);
     }
 }

@@ -2,12 +2,11 @@
 
 namespace App\Modules\Auth\Service;
 
-use App\Contracts\Services\Auth\IAuthService;
+use App\Contracts\Auth\Service\IAuthService;
 use App\Modules\Auth\DTOs\AuthResponseDto;
 use App\Modules\Auth\DTOs\LoginRequestDto;
 use App\Modules\Auth\DTOs\RegisterRequestDto;
 use App\Modules\Auth\Repository\AuthRepository;
-use App\Services\ApiResponse;
 use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -15,91 +14,82 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 class AuthService implements IAuthService
 {
     protected $authRepository;
-    protected $apiResponse;
 
-    public function __construct(AuthRepository $authRepository, ApiResponse $apiResponse)
+    public function __construct(AuthRepository $authRepository)
     {
         $this->authRepository = $authRepository;
-        $this->apiResponse = $apiResponse;
     }
 
-    public function login(LoginRequestDto $request)
+    public function login(LoginRequestDto $request): AuthResponseDto
     {
         if (!Auth::attempt($request->toArray())) {
-            return $this->apiResponse->validationFailed('Login failed, invalid credentials');
+            throw new \Exception('Login failed, invalid credentials');
         }
 
         try {
             $token = JWTAuth::attempt($request->toArray());
 
             if (!$token) {
-                return $this->apiResponse->validationFailed('Login failed, invalid credentials');
+                throw new \Exception('Login failed, invalid credentials');
             }
 
             $refreshToken = JWTAuth::claims(['type' => 'refresh'])->fromUser(Auth::user());
-            $user = Auth::user();
-            $data = new AuthResponseDto(
+
+            return new AuthResponseDto(
                 $token,
-                $user,
+                Auth::user(),
                 'Bearer',
                 $refreshToken
             );
-
-
-            return $this->apiResponse->success($data, 'Login success');
         } catch (JWTException $e) {
-            return $this->apiResponse->serverError($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
     }
 
-
-    public function register(RegisterRequestDto $request)
+    public function register(RegisterRequestDto $request): AuthResponseDto
     {
         if ($request->password !== $request->password_confirmation) {
-            return $this->apiResponse->validationFailed('Confirm password not match');
+            throw new \Exception('Confirm password not match');
         }
 
         $user = $this->authRepository->createUser($request->toArray());
 
         if (!$user) {
-            return $this->apiResponse->serverError('Register failed');
+            throw new \Exception('Register failed');
         }
 
         try {
             $accessToken = JWTAuth::fromUser($user);
-
             $refreshToken = JWTAuth::claims(['type' => 'refresh'])->fromUser($user);
 
-            $data = new AuthResponseDto(
+            return new AuthResponseDto(
                 $accessToken,
                 $user,
                 'Bearer',
                 $refreshToken
             );
-
-            return $this->apiResponse->success($data, 'Register success');
         } catch (JWTException $e) {
-            return $this->apiResponse->serverError($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
     }
 
-
-    public function logout()
+    public function logout(): bool
     {
         try {
             JWTAuth::invalidate(JWTAuth::getToken());
-            return $this->apiResponse->success(null, 'Logout success');
+            return true;
         } catch (JWTException $e) {
-            return $this->apiResponse->serverError($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
     }
 
-    public function refresh($request)
+    public function refresh($request): AuthResponseDto
     {
         try {
             $oldRefreshToken = $request->bearerToken();
+
             if (!$oldRefreshToken) {
-                return $this->apiResponse->validationFailed('Refresh token required');
+                throw new \Exception('Refresh token required');
             }
 
             $user = JWTAuth::setToken($oldRefreshToken)->toUser();
@@ -107,22 +97,23 @@ class AuthService implements IAuthService
             $newAccessToken = JWTAuth::fromUser($user);
             $newRefreshToken = JWTAuth::claims(['type' => 'refresh'])->fromUser($user);
 
-            $data = new AuthResponseDto($newAccessToken, $user, 'Bearer', $newRefreshToken);
-
-            return $this->apiResponse->success($data, 'Token refreshed successfully');
+            return new AuthResponseDto(
+                $newAccessToken,
+                $user,
+                'Bearer',
+                $newRefreshToken
+            );
         } catch (JWTException $e) {
-            return $this->apiResponse->serverError($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
     }
-
 
     public function me()
     {
         try {
-            $user = JWTAuth::parseToken()->authenticate();
-            return $this->apiResponse->success($user);
+            return JWTAuth::parseToken()->authenticate();
         } catch (JWTException $e) {
-            return $this->apiResponse->serverError($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
     }
 }

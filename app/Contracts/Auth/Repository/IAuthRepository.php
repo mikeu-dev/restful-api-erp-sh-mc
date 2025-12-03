@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Contracts\Repositories\Auth;
+namespace App\Contracts\Auth\Repository;
 
 interface IAuthRepository
 {

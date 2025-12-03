@@ -2,7 +2,7 @@
 
 namespace App\Base;
 
-use App\Contracts\Services\BaseServiceContract;
+use App\Contracts\Base\Service\BaseServiceContract;
 
 abstract class BaseService implements BaseServiceContract
 {
@@ -21,16 +21,6 @@ abstract class BaseService implements BaseServiceContract
     public function getById(int $id)
     {
         return $this->repository->find($id);
-    }
-
-    public function create(array $data)
-    {
-        return $this->repository->create($data);
-    }
-
-    public function update(int $id, array $data)
-    {
-        return $this->repository->update($id, $data);
     }
 
     public function delete(int $id)
